@@ -5,8 +5,6 @@ import org.cse.model.Booking;
 import org.cse.repository.SearchBookingRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class SearchBookingService {
