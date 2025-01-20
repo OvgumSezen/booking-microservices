@@ -14,12 +14,10 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 
 @Configuration
 @RequiredArgsConstructor
 public class RabbitMQConfig {
-    private final Environment env;
 
     public static final String APP_EXCHANGE = "APP_EXCHANGE";
 

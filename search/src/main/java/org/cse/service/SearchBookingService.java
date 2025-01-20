@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.cse.model.Booking;
 import org.cse.repository.SearchBookingRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -28,9 +27,5 @@ public class SearchBookingService {
 
     public void cancelBooking(Integer bookingId) {
         searchBookingRepository.deleteById(bookingId);
-    }
-
-    public List<Booking> listBookings() {
-        return searchBookingRepository.findAll();
     }
 }
