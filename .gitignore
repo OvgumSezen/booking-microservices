@@ -1,0 +1,5 @@
+# Project exclude paths
+/apartment/target/
+/api_gateway/target/
+/booking/target/
+/search/search/target/
