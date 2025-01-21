@@ -21,22 +21,46 @@ public class ApartmentListener {
         String routingKey = message.getMessageProperties().getReceivedRoutingKey();
 
         if(routingKey.equals(RabbitMQConfig.APARTMENT_CREATED_RK)) {
-            try {
-                System.out.println("message received: " + message);
-
-                Apartment apartment = objectMapper.readValue(message.getBody(), Apartment.class);
-                apartments.add(apartment.getId());
-
-                System.out.println("updated apartments list: " + apartments);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            if(message.getBody() == null) {
+                return;
             }
+
+            handleApartmentCreated(message);
         }
 
         if (routingKey.equals(RabbitMQConfig.APARTMENT_REMOVED_RK)) {
-            String messageBody = new String(message.getBody());
-            apartments.removeIf(apartmentId -> apartmentId.equals(Integer.parseInt(messageBody)));
-            System.out.println(apartments);
+            if(message.getBody() == null) {
+                return;
+            }
+
+            handleApartmentRemoved(message);
         }
+    }
+
+    private void handleApartmentCreated(Message message) {
+        try {
+            System.out.println("message received: " + message);
+
+            Apartment apartment = objectMapper.readValue(message.getBody(), Apartment.class);
+
+            System.out.println("apartment received: " + apartment.toString() + "with id: " + apartment.getId());
+
+            if(!apartments.contains(apartment.getId())) {
+                apartments.add(apartment.getId());
+            }
+
+            System.out.println("updated apartments list: " + apartments);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void handleApartmentRemoved(Message message) {
+        System.out.println("message received: " + message);
+
+        String messageBody = new String(message.getBody());
+        apartments.removeIf(apartmentId -> apartmentId.equals(Integer.parseInt(messageBody)));
+
+        System.out.println("updated apartments list: " + apartments);
     }
 }

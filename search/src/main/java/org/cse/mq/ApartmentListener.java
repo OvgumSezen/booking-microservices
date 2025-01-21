@@ -15,7 +15,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class ApartmentListener {
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final SearchApartmentService apartmentService;
+    private final SearchApartmentService searchApartmentService;
 
     @RabbitListener(queues = RabbitMQConfig.APARTMENT_QUEUE)
     public void handleApartmentMessages(Message message) {
@@ -35,7 +35,7 @@ public class ApartmentListener {
             System.out.println("message received: " + message);
 
             Apartment apartment = objectMapper.readValue(message.getBody(), Apartment.class);
-            apartmentService.createApartment(apartment);
+            searchApartmentService.createApartment(apartment);
 
             System.out.println("apartment created: " + apartment);
         } catch (IOException e) {
@@ -47,7 +47,7 @@ public class ApartmentListener {
         System.out.println("message received: " + message);
 
         Integer apartmentId = Integer.parseInt(new String(message.getBody()));
-        apartmentService.removeApartment(apartmentId);
+        searchApartmentService.removeApartment(apartmentId);
 
         System.out.println("apartment removed: " + apartmentId);
     }
