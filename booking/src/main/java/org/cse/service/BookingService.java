@@ -17,10 +17,11 @@ import java.util.List;
 public class BookingService {
     private final BookingPublisher bookingPublisher;
     private final BookingRepository bookingRepository;
+    private final ApartmentListener apartmentListener;
 
     @Transactional
     public BookingResponse add(Integer apartment, LocalDateTime from, LocalDateTime to, String who) {
-        if(!ApartmentListener.apartments.contains(apartment)) {
+        if(!apartmentListener.containsApartment(apartment)) {
             return null;
         }
 

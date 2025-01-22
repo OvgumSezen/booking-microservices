@@ -14,12 +14,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DataInitializer {
     private final ApartmentClient apartmentClient;
+    private final ApartmentListener apartmentListener;
 
     @PostConstruct
     @Transactional
     public void initialize() {
-        ApartmentListener.apartments.clear();
+        apartmentListener.clearApartments();
         List<ApartmentResponse> apartmentResponses = apartmentClient.getAllApartments();
-        ApartmentListener.apartments = apartmentResponses.stream().map(ApartmentResponse::getId).toList();
+        apartmentListener.addApartments(apartmentResponses.stream().map(ApartmentResponse::getId).toList());
     }
 }

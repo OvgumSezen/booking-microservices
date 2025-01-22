@@ -1,0 +1,98 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    networks:
+      - app-network
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  apartment-service:
+    build:
+      context: ./apartment
+      dockerfile: Dockerfile
+    container_name: apartment-service
+    networks:
+      - app-network
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./data:/app/data
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:sqlite:/app/data/apartment-db.db
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+    depends_on:
+      - rabbitmq
+
+  booking-service:
+    build:
+      context: ./booking
+      dockerfile: Dockerfile
+    container_name: booking-service
+    networks:
+      - app-network
+    ports:
+      - "8082:8082"
+    volumes:
+      - ./data:/app/data
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:sqlite:/app/data/booking-db.db
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+      APARTMENT_SERVICE_URL: http://apartment-service:8081
+    depends_on:
+      - rabbitmq
+      - apartment-service
+
+  search-service:
+    build:
+      context: ./search
+      dockerfile: Dockerfile
+    container_name: search-service
+    networks:
+      - app-network
+    ports:
+      - "8083:8083"
+    volumes:
+      - ./data:/app/data
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:sqlite:/app/data/search-db.db
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+      APARTMENT_SERVICE_URL: http://apartment-service:8081
+      BOOKING_SERVICE_URL: http://booking-service:8082
+    depends_on:
+      - rabbitmq
+      - apartment-service
+      - booking-service
+
+  api-gateway:
+    build:
+      context: ./api_gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    networks:
+      - app-network
+    ports:
+      - "8080:8080"
+    depends_on:
+      - rabbitmq
+      - apartment-service
+      - booking-service
+      - search-service
+
+volumes:
+  data:
+
+networks:
+  app-network:

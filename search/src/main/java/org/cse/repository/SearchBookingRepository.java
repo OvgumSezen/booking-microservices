@@ -12,6 +12,6 @@ public interface SearchBookingRepository extends JpaRepository<Booking, Integer>
     @Query(value = "SELECT DISTINCT b.apartmentId FROM Booking b WHERE ((b.to > :from AND b.from < :from) OR (b.to > :to AND b.from < :to) OR (b.from >= :from AND b.to <= :to))")
     List<Integer> findBookedApartmentIds(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
 
-    @Query(value = "SELECT * FROM bookings WHERE id = :id", nativeQuery = true)
+    @Query(value = "SELECT DISTINCT b FROM Booking b WHERE b.id = :id")
     Booking findBookingById(@Param("id") Integer id);
 }

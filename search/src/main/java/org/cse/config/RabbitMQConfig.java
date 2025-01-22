@@ -8,16 +8,21 @@ import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+
+import java.util.Objects;
 
 @Configuration
 @RequiredArgsConstructor
 public class RabbitMQConfig {
+    private final Environment env;
 
     public static final String APP_EXCHANGE = "APP_EXCHANGE";
 
@@ -66,6 +71,18 @@ public class RabbitMQConfig {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         return objectMapper;
+    }
+
+    @Bean
+    public ConnectionFactory connectionFactory() {
+        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+
+        connectionFactory.setHost(Objects.requireNonNull(env.getProperty("spring.rabbitmq.host")));
+        connectionFactory.setPort(Integer.parseInt(Objects.requireNonNull(env.getProperty("spring.rabbitmq.port"))));
+        connectionFactory.setUsername(Objects.requireNonNull(env.getProperty("spring.rabbitmq.username")));
+        connectionFactory.setPassword(Objects.requireNonNull(env.getProperty("spring.rabbitmq.password")));
+
+        return connectionFactory;
     }
 
     @Bean

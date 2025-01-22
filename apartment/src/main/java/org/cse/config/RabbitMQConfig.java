@@ -32,8 +32,8 @@ public class RabbitMQConfig {
     public ConnectionFactory connectionFactory() {
         CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
 
-        connectionFactory.setHost("localhost");
-        connectionFactory.setPort(5672);
+        connectionFactory.setHost(Objects.requireNonNull(env.getProperty("spring.rabbitmq.host")));
+        connectionFactory.setPort(Integer.parseInt(Objects.requireNonNull(env.getProperty("spring.rabbitmq.port"))));
         connectionFactory.setUsername(Objects.requireNonNull(env.getProperty("spring.rabbitmq.username")));
         connectionFactory.setPassword(Objects.requireNonNull(env.getProperty("spring.rabbitmq.password")));
 
